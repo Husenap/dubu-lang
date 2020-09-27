@@ -6,7 +6,7 @@ namespace lox1::internal {
 
 class Lexer {
 public:
-	Lexer(const blob& code);
+	Lexer(blob&& code);
 
 	const auto& GetTokens() const { return mTokens; }
 
@@ -28,7 +28,7 @@ private:
 	bool IsAlpha(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
 	bool IsAlphaNumeric(char c) { return IsDigit(c) || IsAlpha(c); }
 
-	const blob& mCode;
+	blob mCode;
 	std::size_t mStart   = 0;
 	std::size_t mCurrent = 0;
 	int         mLine    = 1;

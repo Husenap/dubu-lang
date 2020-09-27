@@ -22,8 +22,8 @@ const static std::map<std::string, TokenType> KEYWORDS{
     {"while", TokenType::While},
 };
 
-Lexer::Lexer(const blob& code)
-    : mCode(code) {
+Lexer::Lexer(blob&& code)
+    : mCode(std::move(code)) {
 	while (!IsAtEnd()) {
 		mStart = mCurrent;
 		ScanToken();

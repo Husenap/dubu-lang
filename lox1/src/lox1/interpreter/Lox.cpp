@@ -11,13 +11,17 @@ namespace lox1 {
 bool Lox::HadError = false;
 
 void Lox::RunFile(std::filesystem::path filePath) {
-	std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+	std::ifstream file(filePath, std::ios::binary);
 
-	if (file.bad()) {
+	if (file.fail()) {
 		throw std::runtime_error("Failed to open file: " + filePath.string());
 	}
 
+	file.seekg(0, file.end);
 	auto size = file.tellg();
+	file.seekg(0, file.beg);
+
+	std::cout << "file size: " << size << std::endl;
 
 	internal::blob code;
 	code.resize(static_cast<std::size_t>(size));
@@ -25,15 +29,15 @@ void Lox::RunFile(std::filesystem::path filePath) {
 	file.seekg(0);
 	file.read(&code[0], size);
 
-	Run(code);
+	Run(std::move(code));
 
 	if (HadError) {
 		exit(64);
 	}
 }
 
-void Lox::Run(const internal::blob& code) {
-	internal::Lexer lexer(code);
+void Lox::Run(internal::blob&& code) {
+	internal::Lexer lexer(std::move(code));
 
 	for (auto& token : lexer.GetTokens()) {
 		std::cout << token << std::endl;
