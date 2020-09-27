@@ -8,6 +8,8 @@
 
 namespace lox1 {
 
+bool Lox::HadError = false;
+
 void Lox::RunFile(std::filesystem::path filePath) {
 	std::ifstream file(filePath, std::ios::binary | std::ios::ate);
 
@@ -25,7 +27,7 @@ void Lox::RunFile(std::filesystem::path filePath) {
 
 	Run(code);
 
-	if (mHadError) {
+	if (HadError) {
 		exit(64);
 	}
 }
@@ -44,7 +46,7 @@ void Lox::Error(int line, std::string_view message) {
 
 void Lox::Report(int line, std::string_view where, std::string_view message) {
 	std::cerr << "[line " << line << "] Error " << where << ": " << message << std::endl;
-	mHadError = true;
+	HadError = true;
 }
 
 }  // namespace lox1

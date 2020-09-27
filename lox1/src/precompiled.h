@@ -1,8 +1,10 @@
 #pragma once
 
 #include <filesystem>
-#include <vector>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
+#include <vector>
 
 #include "lox1/Definitions.h"
