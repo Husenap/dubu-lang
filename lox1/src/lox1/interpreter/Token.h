@@ -51,7 +51,7 @@ enum class TokenType {
 	Eof
 };
 
-using Literal = std::variant<std::string>;
+using Literal = std::variant<std::string, double>;
 
 class Token {
 public:

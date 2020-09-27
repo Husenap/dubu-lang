@@ -4,6 +4,24 @@
 
 namespace lox1::internal {
 
+const static std::map<std::string, TokenType> KEYWORDS{
+    {"and", TokenType::And},
+    {"class", TokenType::Class},
+    {"else", TokenType::Else},
+    {"false", TokenType::False},
+    {"for", TokenType::For},
+    {"fn", TokenType::Fn},
+    {"if", TokenType::If},
+    {"nil", TokenType::Nil},
+    {"or", TokenType::Or},
+    {"print", TokenType::Print},
+    {"return", TokenType::Return},
+    {"super", TokenType::Super},
+    {"this", TokenType::This},
+    {"var", TokenType::Var},
+    {"while", TokenType::While},
+};
+
 Lexer::Lexer(const blob& code)
     : mCode(code) {
 	while (!IsAtEnd()) {
@@ -15,8 +33,9 @@ Lexer::Lexer(const blob& code)
 }
 
 void Lexer::ScanToken() {
+	char c = Advance();
+	switch (c) {
 	// clang-format off
-	switch (mCode[mCurrent++]) {
 	case '(': AddToken(TokenType::LeftParen); break;
 	case ')': AddToken(TokenType::RightParen); break;
 	case '{': AddToken(TokenType::LeftBrace); break;
@@ -32,6 +51,9 @@ void Lexer::ScanToken() {
 	case '<': AddToken(Match('=') ? TokenType::LessEqual : TokenType::Less); break;
 	case '>': AddToken(Match('=') ? TokenType::GreaterEqual : TokenType::Greater); break;
 	case '"': MatchString(); break;
+	case ' ': case '\r': case '\t': break;
+	case '\n': ++mLine; break;
+	// clang-format on
 	case '/':
 		if (Match('/')) {
 			while (Peek() != '\n' && !IsAtEnd()) {
@@ -41,24 +63,27 @@ void Lexer::ScanToken() {
 			AddToken(TokenType::Slash);
 		}
 		break;
-	case ' ': case '\r': case '\t': break;
-	case '\n': ++mLine; break;
 	default:
-		Lox::Error(mLine, "Unexpected Character!");
+		if (IsDigit(c)) {
+			MatchNumber();
+		} else if (IsAlpha(c)) {
+			MatchIdentifier();
+		} else {
+			Lox::Error(mLine, "Unexpected Character!");
+		}
 		break;
 	}
-	// clang-format on
-}
+}  // namespace lox1::internal
 
 char Lexer::Advance() {
 	return mCode[mCurrent++];
 }
 
-char Lexer::Peek() {
-	if (IsAtEnd()) {
+char Lexer::Peek(int offset) {
+	if (mCurrent + offset >= mCode.size()) {
 		return '\0';
 	}
-	return mCode[mCurrent];
+	return mCode[mCurrent + offset];
 }
 
 bool Lexer::Match(char expected) {
@@ -88,6 +113,40 @@ void Lexer::MatchString() {
 	Advance();
 
 	AddToken(TokenType::String, std::string(mCode.begin() + mStart + 1, mCode.begin() + mCurrent - 1));
+}
+
+void Lexer::MatchNumber() {
+	while (IsDigit(Peek())) {
+		Advance();
+	}
+
+	if (Peek() == '.' && IsDigit(Peek(1))) {
+		Advance();
+
+		while (IsDigit(Peek())) {
+			Advance();
+		}
+	}
+
+	std::string number(mCode.begin() + mStart, mCode.begin() + mCurrent);
+	AddToken(TokenType::Number, std::atof(number.c_str()));
+}
+
+void Lexer::MatchIdentifier() {
+	while (IsAlphaNumeric(Peek())) {
+		Advance();
+	}
+
+	std::string text(mCode.begin() + mStart, mCode.begin() + mCurrent);
+
+	TokenType type = TokenType::Identifier;
+
+	auto it = KEYWORDS.find(text);
+	if (it != KEYWORDS.end()) {
+		type = it->second;
+	}
+
+	AddToken(type);
 }
 
 void Lexer::AddToken(TokenType type) {
