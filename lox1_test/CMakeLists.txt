@@ -1,6 +1,7 @@
 set(target_name "lox1_test")
 
 set(src_files
+    "unit/ExpressionTests.cpp"
     "unit/Tests.cpp")
 
 add_executable(${target_name} ${src_files})

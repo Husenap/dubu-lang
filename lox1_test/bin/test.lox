@@ -1,2 +1,5 @@
-var language = "lox";
-var boom = 52.15;
+var language = "lox";           // var identifier equal string semicolon
+var boom = 52.15;               // var identifier equal number semicolon
+if(boom == 52.15){              // if leftparen identifier equalequal number rightparen leftbrace
+    print boom + "is 52.15";    // print identifier plus string semicolon
+}                               // rightbrace

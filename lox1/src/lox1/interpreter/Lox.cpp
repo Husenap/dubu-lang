@@ -42,6 +42,7 @@ void Lox::Run(internal::blob&& code) {
 	for (auto& token : lexer.GetTokens()) {
 		std::cout << token << std::endl;
 	}
+
 }
 
 void Lox::Error(int line, std::string_view message) {

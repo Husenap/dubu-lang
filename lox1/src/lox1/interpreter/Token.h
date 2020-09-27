@@ -36,8 +36,8 @@ enum class TokenType {
 	Class,
 	Else,
 	False,
-	Fn,
 	For,
+	Fn,
 	If,
 	Nil,
 	Or,
@@ -51,7 +51,8 @@ enum class TokenType {
 	Eof
 };
 
-using Literal = std::variant<std::string, double>;
+// add Nil type to this
+using Literal = std::variant<std::monostate, std::string, double, bool>;
 
 class Token {
 public:
@@ -60,6 +61,8 @@ public:
 	    , mLexeme(lexeme)
 	    , mLiteral(literal)
 	    , mLine(line) {}
+
+	const std::string& GetLexeme() const { return mLexeme; }
 
 	std::string ToString() const { return std::to_string(static_cast<int>(mType)) + " " + mLexeme; }
 

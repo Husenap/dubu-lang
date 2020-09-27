@@ -4,6 +4,7 @@ set(src_precompiled
     "src/precompiled.h")
 
 set(src_interpreter
+    "src/lox1/interpreter/Expression.h"
     "src/lox1/interpreter/Token.cpp"
     "src/lox1/interpreter/Token.h"
     "src/lox1/interpreter/Lexer.cpp"
