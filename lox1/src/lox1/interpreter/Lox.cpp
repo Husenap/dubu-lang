@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "Expression.h"
 #include "Lexer.h"
 #include "Parser.h"
 
@@ -41,6 +42,8 @@ void Lox::Run(internal::blob&& code) {
 	internal::Lexer lexer(std::move(code));
 
 	internal::Parser parser(lexer.GetTokens());
+
+	auto expression = parser.GetExpression();
 }
 
 void Lox::Error(int line, std::string_view message) {

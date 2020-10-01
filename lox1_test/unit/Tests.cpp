@@ -3,5 +3,7 @@
 
 TEST(lox1, run_file) {
 	lox1::Lox lox;
-	lox.RunFile("test.lox");
+
+	EXPECT_NO_THROW(lox.RunFile("test.lox"));
+	EXPECT_THROW(lox.RunFile("bad_test.lox"), std::runtime_error);
 }

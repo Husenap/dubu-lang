@@ -50,7 +50,7 @@ private:
 	}
 
 	const std::vector<Token> mTokens;
-	int                      mCurrent;
+	int                      mCurrent = 0;
 };
 
 }  // namespace lox1::internal

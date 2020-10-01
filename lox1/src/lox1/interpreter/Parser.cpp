@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+#include "Expression.h"
 #include "Lox.h"
 
 namespace lox1::internal {
@@ -7,17 +8,17 @@ namespace lox1::internal {
 Parser::Parser(const std::vector<Token>& tokens)
     : mTokens(tokens) {}
 
-inline std::unique_ptr<Expression> Parser::GetExpression() {
+std::unique_ptr<Expression> Parser::GetExpression() {
 	return Equality();
 }
 
-inline std::unique_ptr<Expression> Parser::Equality() {
+std::unique_ptr<Expression> Parser::Equality() {
 	return ParseLeftAssociativeSeries([this] { return Comparison(); },
 	                                  TokenType::BangEqual,
 	                                  TokenType::EqualEqual);
 }
 
-inline std::unique_ptr<Expression> Parser::Comparison() {
+std::unique_ptr<Expression> Parser::Comparison() {
 	return ParseLeftAssociativeSeries([this] { return Addition(); },
 	                                  TokenType::Greater,
 	                                  TokenType::GreaterEqual,
@@ -25,24 +26,24 @@ inline std::unique_ptr<Expression> Parser::Comparison() {
 	                                  TokenType::LessEqual);
 }
 
-inline std::unique_ptr<Expression> Parser::Addition() {
+std::unique_ptr<Expression> Parser::Addition() {
 	return ParseLeftAssociativeSeries(
 	    [this] { return Multiplication(); }, TokenType::Minus, TokenType::Plus);
 }
 
-inline std::unique_ptr<Expression> Parser::Multiplication() {
+std::unique_ptr<Expression> Parser::Multiplication() {
 	return ParseLeftAssociativeSeries(
 	    [this] { return Unary(); }, TokenType::Slash, TokenType::Star);
 }
 
-inline std::unique_ptr<Expression> Parser::Unary() {
+std::unique_ptr<Expression> Parser::Unary() {
 	return Match(TokenType::Bang, TokenType::Minus)
 	           ? std::make_unique<Expression>(
 	                 UnaryExpression{Previous(), Unary()})
 	           : Primary();
 }
 
-inline std::unique_ptr<Expression> Parser::Primary() {
+std::unique_ptr<Expression> Parser::Primary() {
 	if (Match(TokenType::False)) {
 		return std::make_unique<Expression>(LiteralExpression{false});
 	}
@@ -63,16 +64,19 @@ inline std::unique_ptr<Expression> Parser::Primary() {
 		return std::make_unique<Expression>(
 		    GroupingExpression{std::move(expression)});
 	}
+
+	Lox::Error(Peek(), "Expected an expression!");
+	throw std::runtime_error("Expected an expression!");
 }
 
-inline bool Parser::Check(TokenType tokenType) {
+bool Parser::Check(TokenType tokenType) {
 	if (IsAtEnd()) {
 		return false;
 	}
 	return Peek().GetType() == tokenType;
 }
 
-inline const Token& Parser::Advance() {
+const Token& Parser::Advance() {
 	if (!IsAtEnd()) {
 		++mCurrent;
 	}
@@ -89,15 +93,15 @@ const lox1::internal::Token& Parser::Consume(TokenType          tokenType,
 	throw std::runtime_error(message);
 }
 
-inline bool Parser::IsAtEnd() {
+bool Parser::IsAtEnd() {
 	return Peek().GetType() == TokenType::Eof;
 }
 
-inline const Token& Parser::Peek() {
+const Token& Parser::Peek() {
 	return mTokens[mCurrent];
 }
 
-inline const Token& Parser::Previous() {
+const Token& Parser::Previous() {
 	return mTokens[mCurrent - 1];
 }
 
