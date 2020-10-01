@@ -23,8 +23,6 @@ void Lox::RunFile(std::filesystem::path filePath) {
 	auto size = file.tellg();
 	file.seekg(0, file.beg);
 
-	std::cout << "file size: " << size << std::endl;
-
 	internal::blob code;
 	code.resize(static_cast<std::size_t>(size));
 
