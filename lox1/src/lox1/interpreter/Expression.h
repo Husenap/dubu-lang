@@ -12,12 +12,16 @@ struct Expression;
 
 using GroupingExpression = std::tuple<std::unique_ptr<Expression>>;
 using UnaryExpression    = std::tuple<Token, std::unique_ptr<Expression>>;
-using BinaryExpression   = std::tuple<std::unique_ptr<Expression>, Token, std::unique_ptr<Expression>>;
-using LiteralExpression  = std::tuple<Literal>;
+using BinaryExpression =
+    std::tuple<std::unique_ptr<Expression>, Token, std::unique_ptr<Expression>>;
+using LiteralExpression = std::tuple<Literal>;
 
 struct Expression {
-	using Expr = std::
-	    variant<std::unique_ptr<Expression>, GroupingExpression, LiteralExpression, UnaryExpression, BinaryExpression>;
+	using Expr = std::variant<std::unique_ptr<Expression>,
+	                          GroupingExpression,
+	                          LiteralExpression,
+	                          UnaryExpression,
+	                          BinaryExpression>;
 
 	Expression(Expr&& expr)
 	    : mExpr(std::move(expr)) {}
@@ -40,7 +44,9 @@ struct LiteralVisitor {
 };
 
 struct AstPrinter {
-	std::string operator()(const std::unique_ptr<Expression>& expr) const { return expr->Visit<std::string>(*this); }
+	std::string operator()(const std::unique_ptr<Expression>& expr) const {
+		return expr->Visit<std::string>(*this);
+	}
 
 	std::string operator()(const GroupingExpression& expr) const {
 		auto& [expression] = expr;

@@ -25,10 +25,12 @@ private:
 	void AddToken(TokenType type, std::optional<Literal> literal);
 
 	bool IsDigit(char c) { return c >= '0' && c <= '9'; }
-	bool IsAlpha(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
+	bool IsAlpha(char c) {
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+	}
 	bool IsAlphaNumeric(char c) { return IsDigit(c) || IsAlpha(c); }
 
-	blob mCode;
+	blob        mCode;
 	std::size_t mStart   = 0;
 	std::size_t mCurrent = 0;
 	int         mLine    = 1;

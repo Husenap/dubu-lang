@@ -56,15 +56,23 @@ using Literal = std::variant<std::monostate, std::string, double, bool>;
 
 class Token {
 public:
-	Token(TokenType type, std::string_view lexeme, std::optional<Literal> literal, int line)
+	Token(TokenType              type,
+	      std::string_view       lexeme,
+	      std::optional<Literal> literal,
+	      int                    line)
 	    : mType(type)
 	    , mLexeme(lexeme)
 	    , mLiteral(literal)
 	    , mLine(line) {}
 
+	TokenType          GetType() const { return mType; }
 	const std::string& GetLexeme() const { return mLexeme; }
+	const Literal&     GetLiteral() const { return *mLiteral; }
+	int                GetLine() const { return mLine; }
 
-	std::string ToString() const { return std::to_string(static_cast<int>(mType)) + " " + mLexeme; }
+	std::string ToString() const {
+		return std::to_string(static_cast<int>(mType)) + " " + mLexeme;
+	}
 
 private:
 	TokenType              mType;

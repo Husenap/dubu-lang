@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Lexer.h"
+#include "Parser.h"
 
 namespace lox1 {
 
@@ -39,18 +40,24 @@ void Lox::RunFile(std::filesystem::path filePath) {
 void Lox::Run(internal::blob&& code) {
 	internal::Lexer lexer(std::move(code));
 
-	for (auto& token : lexer.GetTokens()) {
-		std::cout << token << std::endl;
-	}
-
+	internal::Parser parser(lexer.GetTokens());
 }
 
 void Lox::Error(int line, std::string_view message) {
 	Report(line, "", message);
 }
 
+void Lox::Error(const internal::Token& token, std::string_view message) {
+	if (token.GetType() == internal::TokenType::Eof) {
+		Report(token.GetLine(), " at end", message);
+	} else {
+		Report(token.GetLine(), " at '" + token.GetLexeme() + "'", message);
+	}
+}
+
 void Lox::Report(int line, std::string_view where, std::string_view message) {
-	std::cerr << "[line " << line << "] Error " << where << ": " << message << std::endl;
+	std::cerr << "[line " << line << "] Error " << where << ": " << message
+	          << std::endl;
 	HadError = true;
 }
 

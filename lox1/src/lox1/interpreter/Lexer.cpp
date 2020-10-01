@@ -112,7 +112,9 @@ void Lexer::MatchString() {
 
 	Advance();
 
-	AddToken(TokenType::String, std::string(mCode.begin() + mStart + 1, mCode.begin() + mCurrent - 1));
+	AddToken(
+	    TokenType::String,
+	    std::string(mCode.begin() + mStart + 1, mCode.begin() + mCurrent - 1));
 }
 
 void Lexer::MatchNumber() {

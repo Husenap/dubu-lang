@@ -7,6 +7,8 @@ set(src_interpreter
     "src/lox1/interpreter/Expression.h"
     "src/lox1/interpreter/Token.cpp"
     "src/lox1/interpreter/Token.h"
+    "src/lox1/interpreter/Parser.cpp"
+    "src/lox1/interpreter/Parser.h"
     "src/lox1/interpreter/Lexer.cpp"
     "src/lox1/interpreter/Lexer.h"
     "src/lox1/interpreter/Lox.cpp"
