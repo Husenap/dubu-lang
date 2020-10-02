@@ -9,6 +9,7 @@ const static std::map<std::string, TokenType> KEYWORDS{
     {"class", TokenType::Class},
     {"else", TokenType::Else},
     {"false", TokenType::False},
+    {"true", TokenType::True},
     {"for", TokenType::For},
     {"fn", TokenType::Fn},
     {"if", TokenType::If},

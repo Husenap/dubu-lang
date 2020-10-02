@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Parser.h"
 #include "Token.h"
+#include "Interpreter.h"
 
 namespace lox1 {
 
@@ -14,9 +16,11 @@ public:
 	static void Report(int              line,
 	                   std::string_view where,
 	                   std::string_view message);
+	static void ReportRuntimeError(internal::RuntimeError error);
 
 private:
 	static bool HadError;
+	static bool HadRuntimeError;
 };
 
 }  // namespace lox1

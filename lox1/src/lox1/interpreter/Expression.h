@@ -39,8 +39,11 @@ struct LiteralVisitor {
 	std::string operator()(const T& value) {
 		return std::to_string(value);
 	}
-	std::string operator()(const std::monostate&) { return "nil"; }
-	std::string operator()(const std::string& value) { return value; }
+	std::string operator()(const Nil&) { return "nil"; }
+	std::string operator()(const bool& value) { return value ? "true" : "false"; }
+	std::string operator()(const std::string& value) {
+		return "\"" + value + "\"";
+	}
 };
 
 struct AstPrinter {

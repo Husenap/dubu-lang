@@ -1,5 +1,7 @@
 #include "Parser.h"
 
+#include <iostream>
+
 #include "Expression.h"
 #include "Lox.h"
 
@@ -7,6 +9,15 @@ namespace lox1::internal {
 
 Parser::Parser(const std::vector<Token>& tokens)
     : mTokens(tokens) {}
+
+std::unique_ptr<Expression> Parser::Parse() {
+	try {
+		return GetExpression();
+	} catch (ParseError e) {
+		std::cerr << e.what() << std::endl;
+		throw e;
+	}
+}
 
 std::unique_ptr<Expression> Parser::GetExpression() {
 	return Equality();
@@ -52,7 +63,7 @@ std::unique_ptr<Expression> Parser::Primary() {
 	}
 	if (Match(TokenType::Nil)) {
 		return std::make_unique<Expression>(
-		    LiteralExpression{std::monostate()});
+		    LiteralExpression{Nil()});
 	}
 	if (Match(TokenType::Number, TokenType::String)) {
 		return std::make_unique<Expression>(
@@ -65,8 +76,7 @@ std::unique_ptr<Expression> Parser::Primary() {
 		    GroupingExpression{std::move(expression)});
 	}
 
-	Lox::Error(Peek(), "Expected an expression!");
-	throw std::runtime_error("Expected an expression!");
+	throw Error(Peek(), "Expected an expression!");
 }
 
 bool Parser::Check(TokenType tokenType) {
@@ -89,8 +99,7 @@ const lox1::internal::Token& Parser::Consume(TokenType          tokenType,
 		return Advance();
 	}
 
-	Lox::Error(Peek(), message);
-	throw std::runtime_error(message);
+	throw Error(Peek(), message);
 }
 
 bool Parser::IsAtEnd() {
@@ -103,6 +112,35 @@ const Token& Parser::Peek() {
 
 const Token& Parser::Previous() {
 	return mTokens[mCurrent - 1];
+}
+
+void Parser::Synchronize() {
+	Advance();
+
+	while (!IsAtEnd()) {
+		if (Previous().GetType() == TokenType::Semicolon) {
+			return;
+		}
+
+		switch (Peek().GetType()) {
+		case TokenType::Class:
+		case TokenType::Fn:
+		case TokenType::Var:
+		case TokenType::For:
+		case TokenType::If:
+		case TokenType::While:
+		case TokenType::Print:
+		case TokenType::Return:
+			return;
+		}
+
+		Advance();
+	}
+}
+
+ParseError Parser::Error(const Token& token, std::string_view message) {
+	Lox::Error(token, message);
+	return ParseError();
 }
 
 }  // namespace lox1::internal

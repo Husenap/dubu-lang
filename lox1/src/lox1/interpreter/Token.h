@@ -51,8 +51,8 @@ enum class TokenType {
 	Eof
 };
 
-// add Nil type to this
-using Literal = std::variant<std::monostate, std::string, double, bool>;
+using Nil = std::monostate;
+using Literal = std::variant<Nil, std::string, double, bool>;
 
 class Token {
 public:

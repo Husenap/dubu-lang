@@ -5,13 +5,16 @@
 
 namespace lox1::internal {
 
+class ParseError : public std::exception {};
+
 class Parser {
 public:
 	Parser(const std::vector<Token>& tokens);
 
-	std::unique_ptr<Expression> GetExpression();
+	std::unique_ptr<Expression> Parse();
 
 private:
+	std::unique_ptr<Expression> GetExpression();
 	std::unique_ptr<Expression> Equality();
 	std::unique_ptr<Expression> Comparison();
 	std::unique_ptr<Expression> Addition();
@@ -48,6 +51,10 @@ private:
 
 		return false;
 	}
+
+	void Synchronize();
+
+	ParseError Error(const Token& token, std::string_view message);
 
 	const std::vector<Token> mTokens;
 	int                      mCurrent = 0;
