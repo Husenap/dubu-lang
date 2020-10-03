@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <cmath>
 
 #include "Expression.h"
 #include "Token.h"
@@ -13,7 +14,7 @@ public:
 		mMessage = "RuntimeError [line " + std::to_string(token.GetLine()) + "]: " + message;
 	}
 
-	char const* what() const override { return mMessage.c_str(); }
+	char const* what() const noexcept override { return mMessage.c_str(); }
 
 private:
 	std::string mMessage;
@@ -44,9 +45,9 @@ struct InterpreterVisitor {
 			return -std::get<double>(right);
 		case TokenType::Bang:
 			return !IsTruthy(right);
+		default:
+			return Nil();
 		}
-
-		return Nil();
 	}
 	Literal operator()(const BinaryExpression& expr) const {
 		auto& [leftExpression, op, rightExpression] = expr;
@@ -111,9 +112,9 @@ struct InterpreterVisitor {
 			}
 			throw RuntimeError(op,
 			                   "Operands must be two numbers or at least one string!");
+		default:
+			return Nil();
 		}
-
-		return Nil();
 	}
 	Literal operator()(const TernaryExpression& expr) const {
 		auto& [condition, left, right] = expr;

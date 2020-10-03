@@ -8,7 +8,7 @@ void Interpreter::Interpret(const std::unique_ptr<Expression>& expr) const {
 	try {
 		Literal value = expr->Visit<Literal>(InterpreterVisitor());
 		std::cout << std::visit(LiteralVisitor(), value) << std::endl;
-	} catch (RuntimeError e) {
+	} catch (const RuntimeError& e) {
 		Lox::ReportRuntimeError(e);
 	}
 }

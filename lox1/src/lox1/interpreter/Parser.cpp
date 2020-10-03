@@ -13,7 +13,7 @@ Parser::Parser(const std::vector<Token>& tokens)
 std::unique_ptr<Expression> Parser::Parse() {
 	try {
 		return GetExpression();
-	} catch (ParseError e) {
+	} catch (const ParseError& e) {
 		std::cerr << e.what() << std::endl;
 		throw e;
 	}
@@ -130,11 +130,11 @@ bool Parser::IsAtEnd() {
 }
 
 const Token& Parser::Peek() {
-	return mTokens[mCurrent];
+	return mTokens[static_cast<std::size_t>(mCurrent)];
 }
 
 const Token& Parser::Previous() {
-	return mTokens[mCurrent - 1];
+	return mTokens[static_cast<std::size_t>(mCurrent - 1)];
 }
 
 void Parser::Synchronize() {
@@ -155,9 +155,9 @@ void Parser::Synchronize() {
 		case TokenType::Print:
 		case TokenType::Return:
 			return;
+		default:
+			Advance();
 		}
-
-		Advance();
 	}
 }
 
