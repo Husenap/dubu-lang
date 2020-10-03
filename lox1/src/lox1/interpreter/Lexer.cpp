@@ -47,6 +47,9 @@ void Lexer::ScanToken() {
 	case '+': AddToken(TokenType::Plus); break;
 	case ';': AddToken(TokenType::Semicolon); break;
 	case '*': AddToken(TokenType::Star); break;
+	case '?': AddToken(TokenType::Query); break;
+	case ':': AddToken(TokenType::Colon); break;
+	case '%': AddToken(TokenType::Modulo); break;
 	case '!': AddToken(Match('=') ? TokenType::BangEqual : TokenType::Bang); break;
 	case '=': AddToken(Match('=') ? TokenType::EqualEqual : TokenType::Equal); break;
 	case '<': AddToken(Match('=') ? TokenType::LessEqual : TokenType::Less); break;

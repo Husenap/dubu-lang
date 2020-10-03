@@ -55,6 +55,8 @@ struct InterpreterVisitor {
 		Literal right = Evaluate(rightExpression);
 
 		switch (op.GetType()) {
+		case TokenType::Comma:
+			return right;
 		case TokenType::Greater:
 			CheckNumberOperands(op, left, right);
 			return std::get<double>(left) > std::get<double>(right);
@@ -80,6 +82,12 @@ struct InterpreterVisitor {
 				throw RuntimeError(op, "Division by zero!");
 			}
 			return std::get<double>(left) / std::get<double>(right);
+		case TokenType::Modulo:
+			CheckNumberOperands(op, left, right);
+			if (std::get<double>(right) == 0.0) {
+				throw RuntimeError(op, "Modulo by zero!");
+			}
+			return std::fmod(std::get<double>(left), std::get<double>(right));
 		case TokenType::Star:
 			CheckNumberOperands(op, left, right);
 			return std::get<double>(left) * std::get<double>(right);
@@ -93,12 +101,28 @@ struct InterpreterVisitor {
 				return std::get<std::string>(left) +
 				       std::get<std::string>(right);
 			}
-
+			if (std::holds_alternative<std::string>(left)) {
+				return std::get<std::string>(left) +
+				       std::visit(LiteralVisitor(), right);
+			}
+			if (std::holds_alternative<std::string>(right)) {
+				return std::visit(LiteralVisitor(), left) +
+				       std::get<std::string>(right);
+			}
 			throw RuntimeError(op,
-			                   "Operands must be two numbers or two strings!");
+			                   "Operands must be two numbers or at least one string!");
 		}
 
 		return Nil();
+	}
+	Literal operator()(const TernaryExpression& expr) const {
+		auto& [condition, left, right] = expr;
+
+		if (IsTruthy(Evaluate(condition))) {
+			return Evaluate(left);
+		} else {
+			return Evaluate(right);
+		}
 	}
 
 	void CheckNumberOperand(const Token& op, const Literal& operand) const {

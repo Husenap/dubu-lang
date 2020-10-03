@@ -15,6 +15,9 @@ enum class TokenType {
 	Semicolon,
 	Slash,
 	Star,
+	Colon,
+	Query,
+	Modulo,
 
 	// One or two character tokens
 	Bang,

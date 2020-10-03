@@ -12,5 +12,4 @@ TEST(lox1, run_files) {
 	EXPECT_NO_THROW(lox.RunFile("test5.lox"));
 	EXPECT_THROW(lox.RunFile("bad_test.lox"), lox1::internal::ParseError);
 	EXPECT_NO_THROW(lox.RunFile("bad_test1.lox"));
-	EXPECT_NO_THROW(lox.RunFile("bad_test2.lox"));
 }

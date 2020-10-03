@@ -15,6 +15,8 @@ public:
 
 private:
 	std::unique_ptr<Expression> GetExpression();
+	std::unique_ptr<Expression> Comma();
+	std::unique_ptr<Expression> Ternary();
 	std::unique_ptr<Expression> Equality();
 	std::unique_ptr<Expression> Comparison();
 	std::unique_ptr<Expression> Addition();

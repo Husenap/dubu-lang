@@ -20,7 +20,31 @@ std::unique_ptr<Expression> Parser::Parse() {
 }
 
 std::unique_ptr<Expression> Parser::GetExpression() {
-	return Equality();
+	return Comma();
+}
+
+std::unique_ptr<Expression> Parser::Comma() {
+	return ParseLeftAssociativeSeries([this] { return Ternary(); },
+	                                  TokenType::Comma);
+}
+
+std::unique_ptr<Expression> Parser::Ternary() {
+	auto condition = Equality();
+
+	if (!Match(TokenType::Query)) {
+		return condition;
+	}
+
+	auto left = Ternary();
+
+	if (!Match(TokenType::Colon)) {
+		throw Error(Peek(), "Expected a ':'");
+	}
+
+	auto right = Ternary();
+
+	return std::make_unique<Expression>(TernaryExpression{
+	    std::move(condition), std::move(left), std::move(right)});
 }
 
 std::unique_ptr<Expression> Parser::Equality() {
@@ -44,7 +68,7 @@ std::unique_ptr<Expression> Parser::Addition() {
 
 std::unique_ptr<Expression> Parser::Multiplication() {
 	return ParseLeftAssociativeSeries(
-	    [this] { return Unary(); }, TokenType::Slash, TokenType::Star);
+	    [this] { return Unary(); }, TokenType::Slash, TokenType::Star, TokenType::Modulo);
 }
 
 std::unique_ptr<Expression> Parser::Unary() {
@@ -62,8 +86,7 @@ std::unique_ptr<Expression> Parser::Primary() {
 		return std::make_unique<Expression>(LiteralExpression{true});
 	}
 	if (Match(TokenType::Nil)) {
-		return std::make_unique<Expression>(
-		    LiteralExpression{Nil()});
+		return std::make_unique<Expression>(LiteralExpression{Nil()});
 	}
 	if (Match(TokenType::Number, TokenType::String)) {
 		return std::make_unique<Expression>(

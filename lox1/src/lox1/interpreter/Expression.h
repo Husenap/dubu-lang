@@ -14,6 +14,9 @@ using GroupingExpression = std::tuple<std::unique_ptr<Expression>>;
 using UnaryExpression    = std::tuple<Token, std::unique_ptr<Expression>>;
 using BinaryExpression =
     std::tuple<std::unique_ptr<Expression>, Token, std::unique_ptr<Expression>>;
+using TernaryExpression = std::tuple<std::unique_ptr<Expression>,
+                                     std::unique_ptr<Expression>,
+                                     std::unique_ptr<Expression>>;
 using LiteralExpression = std::tuple<Literal>;
 
 struct Expression {
@@ -21,7 +24,8 @@ struct Expression {
 	                          GroupingExpression,
 	                          LiteralExpression,
 	                          UnaryExpression,
-	                          BinaryExpression>;
+	                          BinaryExpression,
+	                          TernaryExpression>;
 
 	Expression(Expr&& expr)
 	    : mExpr(std::move(expr)) {}
@@ -40,7 +44,9 @@ struct LiteralVisitor {
 		return std::to_string(value);
 	}
 	std::string operator()(const Nil&) { return "nil"; }
-	std::string operator()(const bool& value) { return value ? "true" : "false"; }
+	std::string operator()(const bool& value) {
+		return value ? "true" : "false";
+	}
 	std::string operator()(const std::string& value) {
 		return "\"" + value + "\"";
 	}
@@ -69,6 +75,11 @@ struct AstPrinter {
 	std::string operator()(const BinaryExpression& expr) const {
 		auto& [left, op, right] = expr;
 		return Parenthesize(op.GetLexeme(), left, right);
+	}
+
+	std::string operator()(const TernaryExpression& expr) const {
+		auto& [condition, left, right] = expr;
+		return Parenthesize("?:", condition, left, right);
 	}
 
 	template <typename... Args>

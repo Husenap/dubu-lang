@@ -48,17 +48,21 @@ void Lox::Run(internal::blob&& code) {
 	HadError        = false;
 	HadRuntimeError = false;
 
+	auto codeCopy = code;
+	codeCopy.push_back('\0');
 	internal::Lexer lexer(std::move(code));
 
 	internal::Parser parser(lexer.GetTokens());
 
 	if (auto expression = parser.Parse(); expression) {
 		std::cout << "=========================================" << std::endl;
-		std::cout << "Expression: ";
+		std::cout << " Expression: ";
+		std::cout << codeCopy.data() << std::endl;
+		std::cout << "Syntax Tree: ";
 		std::string result =
 		    expression->Visit<std::string>(internal::AstPrinter());
 		std::cout << result << std::endl;
-		std::cout << "    Result: ";
+		std::cout << "     Result: ";
 		internal::Interpreter interpreter;
 		interpreter.Interpret(expression);
 	}
