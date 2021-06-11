@@ -1,7 +1,7 @@
-@echo off
+#! /bin/bash
 
 cmake . -B.build -Ax64
 cmake --build .build/
 cd .build/
-ctest . --verbose
+ctest .
 cd ..
